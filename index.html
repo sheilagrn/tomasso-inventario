@@ -1,21 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tomasso Inventario</title>
-    <link rel="apple-touch-icon" href="https://img.freepik.com/vector-premium/letra-t-logotipo-rojo-sobre-fondo-blanco-estilo-plano-ilustracion-vectorial_785634-193.jpg">
+    <link rel="apple-touch-icon"
+        href="https://img.freepik.com/vector-premium/letra-t-logotipo-rojo-sobre-fondo-blanco-estilo-plano-ilustracion-vectorial_785634-193.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .category-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .category-active .category-content { max-height: 5000px; transition: max-height 0.5s ease-in; }
-        .chevron { transition: transform 0.3s ease; }
-        .category-active .chevron { transform: rotate(180deg); }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .category-active .category-content {
+            max-height: 5000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+
+        .category-active .chevron {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
+
 <body class="pb-32">
 
     <!-- Header -->
@@ -26,14 +54,16 @@
                 <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">Control de Stock</p>
             </div>
             <div id="header-right" class="flex items-center gap-2">
-                <div id="local-badge" class="hidden bg-red-600 text-[10px] px-3 py-1 rounded-full uppercase font-bold">Sin Local</div>
-                <button id="btn-back" onclick="resetApp()" class="hidden text-xs bg-gray-800 px-2 py-1 rounded text-gray-400 font-bold">CAMBIAR</button>
+                <div id="local-badge" class="hidden bg-red-600 text-[10px] px-3 py-1 rounded-full uppercase font-bold">
+                    Sin Local</div>
+                <button id="btn-back" onclick="resetApp()"
+                    class="hidden text-xs bg-gray-800 px-2 py-1 rounded text-gray-400 font-bold">CAMBIAR</button>
             </div>
         </div>
     </header>
 
     <main class="max-w-md mx-auto p-4 space-y-4">
-        
+
         <!-- Selección de Local -->
         <section id="setup-section" class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100 mt-10">
             <div class="text-center mb-6">
@@ -42,15 +72,18 @@
                 <p class="text-sm text-gray-500">Seleccioná la sucursal de hoy:</p>
             </div>
             <div class="grid grid-cols-1 gap-4">
-                <button onclick="setLocal('España 501')" class="group text-left p-5 rounded-2xl border-2 border-gray-100 hover:border-red-500 active:bg-red-50 transition-all">
+                <button onclick="setLocal('España 501')"
+                    class="group text-left p-5 rounded-2xl border-2 border-gray-100 hover:border-red-500 active:bg-red-50 transition-all">
                     <span class="block text-xs font-bold text-gray-400 uppercase">Local 1</span>
                     <span class="text-lg font-bold text-gray-700">España 501</span>
                 </button>
-                <button onclick="setLocal('Mitre 338')" class="group text-left p-5 rounded-2xl border-2 border-gray-100 hover:border-red-500 active:bg-red-50 transition-all">
+                <button onclick="setLocal('Mitre 338')"
+                    class="group text-left p-5 rounded-2xl border-2 border-gray-100 hover:border-red-500 active:bg-red-50 transition-all">
                     <span class="block text-xs font-bold text-gray-400 uppercase">Local 2</span>
                     <span class="text-lg font-bold text-gray-700">Mitre 338</span>
                 </button>
-                <button onclick="setLocal('Necochea 1295')" class="group text-left p-5 rounded-2xl border-2 border-gray-100 hover:border-red-500 active:bg-red-50 transition-all">
+                <button onclick="setLocal('Necochea 1295')"
+                    class="group text-left p-5 rounded-2xl border-2 border-gray-100 hover:border-red-500 active:bg-red-50 transition-all">
                     <span class="block text-xs font-bold text-gray-400 uppercase">Local 3</span>
                     <span class="text-lg font-bold text-gray-700">Necochea 1295</span>
                 </button>
@@ -60,7 +93,7 @@
         <!-- Contenido -->
         <div id="main-content" class="hidden space-y-4">
             <div class="sticky top-20 z-40">
-                <input type="text" id="search" placeholder="🔍 Buscar producto..." 
+                <input type="text" id="search" placeholder="🔍 Buscar producto..."
                     class="w-full p-4 rounded-2xl shadow-xl border-none focus:ring-2 focus:ring-red-500 text-sm"
                     onkeyup="filterProducts()">
             </div>
@@ -69,18 +102,23 @@
     </main>
 
     <!-- Footer -->
-    <footer id="footer-actions" class="hidden fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-gray-100 z-50">
+    <footer id="footer-actions"
+        class="hidden fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-gray-100 z-50">
         <div class="max-w-md mx-auto">
-            <button onclick="generateReport()" class="w-full bg-red-600 text-white font-bold py-5 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-transform">
+            <button onclick="generateReport()"
+                class="w-full bg-red-600 text-white font-bold py-5 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-transform">
                 <span>📊</span> GENERAR PLANILLA EXCEL
             </button>
         </div>
     </footer>
 
     <!-- Modal Éxito -->
-    <div id="modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 z-[100]">
+    <div id="modal"
+        class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 z-[100]">
         <div class="bg-white rounded-[2.5rem] p-10 max-w-sm w-full text-center space-y-6">
-            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto">✓</div>
+            <div
+                class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto">
+                ✓</div>
             <h2 class="text-2xl font-bold text-gray-900">¡Descargado!</h2>
             <button onclick="resetApp()" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold">LISTO</button>
         </div>
@@ -88,160 +126,193 @@
 
     <script>
         const inventoryData = [
-            { 
+            {
                 mainCat: "Bebidas",
                 subCats: [
-                    { name: "Bebidas Chicas", items: [
-                        { id: "61319", name: "AGUA BENEDICTINO CHICA" },
-                        { id: "61800", name: "AGUA CON GAS CHICA" },
-                        { id: "60326", name: "AQUARIUS LIMONADA CHICA" },
-                        { id: "58673", name: "AQUARIUS MANZANA CHICA" },
-                        { id: "58674", name: "AQUARIUS NARANJA CHICA"},
-                        { id: "58676", name: "AQUARIUS POMELO CHICA"},
-                        { id: "60325", name: "AQUARIUS POMELO ROSADO CHICA"},
-                        { id: "73244", name: "FANTA SIN AZUCAR CHICA"},
-                        { id: "45241", name: "SMARTWATER CHICA"},
-                        { id: "61573", name: "SPRITE ZERO CHICA"},
-                        { id: "45265", name: "COCA COLA CHICA"},
-                        { id: "45269", name: "COCA COLA LIGHT CHICA"},
-                        { id: "45273", name: "COCA COLA ZERO CHICA"},
-                        { id: "45275", name: "FANTA NARANJA CHICA"},
-                        { id: "45279", name: "SPRITE CHICA"},
-                        { id: "61409", name: "AQUARIUS LIMONADA 237ml"},
-                        { id: "61410", name: "AQUARIUS MANZANA 237ml"},
-                        { id: "61411", name: "AQUARIUS NARANJA 237ml"},
-                        { id: "61412", name: "AQUARIUS PERA 237ml"},
-                        { id: "61413", name: "AQUARIUS POMELO 237ml"},
-                        { id: "61414", name: "AQUARIUS POMELO ROSADO 237ml"},
-                        { id: "45264", name: "COCA COLA 237ml"},
-                        { id: "45272", name: "COCA COLA ZERO 237ml"},
-                        { id: "45274", name: "FANTA NARANJA 237ml"},
-                        { id: "45278", name: "SPRITE 237ml"}
-                    ]},
-                    { name: "Bebidas Grandes", items: [
-                        { id: "61574", name: "SPRITE ZERO GRANDE" },
-                        { id: "45242", name: "AGUA 1.5l" },
-                        { id: "45243", name: "AGUA SABORIZADA 1.5l" },
-                        { id: "45283", name: "COCA COLA GRANDE" },
-                        { id: "45284", name: "COCA COLA LIGHT GRANDE" },
-                        { id: "45286", name: "COCA COLA ZERO GRANDE" },
-                        { id: "45288", name: "FANTA NARANJA GRANDE" },
-                        { id: "45291", name: "SPRITE GRANDE" }
-                    ]},
-                    { name: "Cervezas", items: [
-                        { id: "45248", name: "ANDES IPA" },
-                        { id: "45249", name: "ANDES NEGRA" },
-                        { id: "45250", name: "ANDES ROJA" },
-                        { id: "45251", name: "ANDES RUBIA" },
-                        { id: "45252", name: "BRAHMA" },
-                        { id: "45253", name: "BUDWEISER" },
-                        { id: "45255", name: "CORONA 410ml" },
-                        { id: "45257", name: "PATAGONIA 24.7" },
-                        { id: "45258", name: "PATAGONIA AMBER" },
-                        { id: "45259", name: "PATAGONIA OSO" },
-                        { id: "45260", name: "PATAGONIA WEISSE" },
-                        { id: "45261", name: "QUILMES" },
-                        { id: "45263", name: "STELLA ARTOIS" }
-                    ]}
+                    {
+                        name: "Bebidas Chicas", items: [
+                            { id: "61319", name: "AGUA BENEDICTINO CHICA" },
+                            { id: "61800", name: "AGUA CON GAS CHICA" },
+                            { id: "60326", name: "AQUARIUS LIMONADA CHICA" },
+                            { id: "58673", name: "AQUARIUS MANZANA CHICA" },
+                            { id: "58674", name: "AQUARIUS NARANJA CHICA" },
+                            { id: "58676", name: "AQUARIUS POMELO CHICA" },
+                            { id: "60325", name: "AQUARIUS POMELO ROSADO CHICA" },
+                            { id: "73244", name: "FANTA SIN AZUCAR CHICA" },
+                            { id: "45241", name: "SMARTWATER CHICA" },
+                            { id: "61573", name: "SPRITE ZERO CHICA" },
+                            { id: "45265", name: "COCA COLA CHICA" },
+                            { id: "45269", name: "COCA COLA LIGHT CHICA" },
+                            { id: "45273", name: "COCA COLA ZERO CHICA" },
+                            { id: "45275", name: "FANTA NARANJA CHICA" },
+                            { id: "45279", name: "SPRITE CHICA" },
+                            { id: "61409", name: "AQUARIUS LIMONADA 237ml" },
+                            { id: "61410", name: "AQUARIUS MANZANA 237ml" },
+                            { id: "61411", name: "AQUARIUS NARANJA 237ml" },
+                            { id: "61412", name: "AQUARIUS PERA 237ml" },
+                            { id: "61413", name: "AQUARIUS POMELO 237ml" },
+                            { id: "61414", name: "AQUARIUS POMELO ROSADO 237ml" },
+                            { id: "45264", name: "COCA COLA 237ml" },
+                            { id: "45272", name: "COCA COLA ZERO 237ml" },
+                            { id: "45274", name: "FANTA NARANJA 237ml" },
+                            { id: "45278", name: "SPRITE 237ml" }
+                        ]
+                    },
+                    {
+                        name: "Bebidas Grandes", items: [
+                            { id: "61574", name: "SPRITE ZERO GRANDE" },
+                            { id: "45242", name: "AGUA 1.5l" },
+                            { id: "45243", name: "AGUA SABORIZADA 1.5l" },
+                            { id: "45283", name: "COCA COLA GRANDE" },
+                            { id: "45284", name: "COCA COLA LIGHT GRANDE" },
+                            { id: "45286", name: "COCA COLA ZERO GRANDE" },
+                            { id: "45288", name: "FANTA NARANJA GRANDE" },
+                            { id: "45291", name: "SPRITE GRANDE" }
+                        ]
+                    },
+                    {
+                        name: "Cervezas", items: [
+                            { id: "45248", name: "ANDES IPA" },
+                            { id: "45249", name: "ANDES NEGRA" },
+                            { id: "45250", name: "ANDES ROJA" },
+                            { id: "45251", name: "ANDES RUBIA" },
+                            { id: "45252", name: "BRAHMA" },
+                            { id: "45253", name: "BUDWEISER" },
+                            { id: "45255", name: "CORONA 410ml" },
+                            { id: "45257", name: "PATAGONIA 24.7" },
+                            { id: "45258", name: "PATAGONIA AMBER" },
+                            { id: "45259", name: "PATAGONIA OSO" },
+                            { id: "45260", name: "PATAGONIA WEISSE" },
+                            { id: "45261", name: "QUILMES" },
+                            { id: "45263", name: "STELLA ARTOIS" }
+                        ]
+                    }
                 ]
             },
-            { 
+            {
                 mainCat: "Empanadas",
                 subCats: [
-                    { name: "Empanadas Clasicas", items: [
-                        { id: "45318", name: "EMPANADA CARNE" },
-                        { id: "45319", name: "EMPANADA CARNE PICANTE" },
-                        { id: "45320", name: "EMPANADA CEBOLLA Y QUESO" },
-                        { id: "45321", name: "EMPANADA HUMITA" },
-                        { id: "45322", name: "EMPANADA JAMON Y QUESO" },
-                        { id: "45323", name: "EMPANADA POLLO" },
-                        { id: "45324", name: "EMPANADA VERDURA" }
-                    ]},
-                    { name: "Empanadas Tentacion", items: [
-                        { id: "45308", name: "EMPANADA VEGGIE INTEGRAL" },
-                        { id: "45310", name: "EMPANADA BONDIOLA BBQ TENTACION" },
-                        { id: "45311", name: "EMPANADA CARNE CORTADA A CUCHILLO" },
-        { id: "45312", name: "EMPANADA CHEESE BURGER" },
-        { id: "45313", name: "EMPANADA CAPRESE" },
-        { id: "45315", name: "EMPANADA ROQUEFORT JAMON" },
-        { id: "45316", name: "CAMBIO A ESPECIALES" }
-                    ]}
+                    {
+                        name: "Empanadas Clasicas", items: [
+                            { id: "45318", name: "EMPANADA CARNE" },
+                            { id: "45319", name: "EMPANADA CARNE PICANTE" },
+                            { id: "45320", name: "EMPANADA CEBOLLA Y QUESO" },
+                            { id: "45321", name: "EMPANADA HUMITA" },
+                            { id: "45322", name: "EMPANADA JAMON Y QUESO" },
+                            { id: "45323", name: "EMPANADA POLLO" },
+                            { id: "45324", name: "EMPANADA VERDURA" }
+                        ]
+                    },
+                    {
+                        name: "Empanadas Tentacion", items: [
+                            { id: "45308", name: "EMPANADA VEGGIE INTEGRAL" },
+                            { id: "45310", name: "EMPANADA BONDIOLA BBQ TENTACION" },
+                            { id: "45311", name: "EMPANADA CARNE CORTADA A CUCHILLO" },
+                            { id: "45312", name: "EMPANADA CHEESE BURGER" },
+                            { id: "45313", name: "EMPANADA CAPRESE" },
+                            { id: "45315", name: "EMPANADA ROQUEFORT JAMON" },
+                            { id: "45316", name: "CAMBIO A ESPECIALES" }
+                        ]
+                    }
                 ]
             },
             {
                 mainCat: "Postres",
                 subCats: [
-                  { name: "Postres", items: [
-                    { id: "100549", name: "GIO BANANA CON CHOCOLATE" },
-                    { id: "100553", name: "GIO BANANA CON CHOCOLATE CON MANI" },
-                    { id: "100546", name: "GIO FRAMBUESAS BAÑADAS AMERICAN COOKIES"},
-                    { id: "100544", name: "GIO FRAMBUESAS BAÑADAS EN DOBLE CHOCOLATE" },
-                    { id: "100550", name: "GIO FRAMBUESAS BAÑADAS EN CHOCO BLANCO Y PISTACHO" },
-                    { id: "100548", name: "GIO FRAMBUESAS BAÑADAS EN CHOCOLATE SEMIAMARGO" },
-                    { id: "100552", name: "GIO FRUTILLA BAÑADAS AMERICAN COOKIES" },
-                    { id: "100554", name: "GIO FRUTILLAS BAÑADAS EN CHOCOLATE SEMIAMARGO" },
-                    { id: "100547", name: "GIO FRUTILLAS BAÑADAS EN DOBLE CHOCOLATE" },
-                    { id: "100545", name: "GIO MORAS BAÑADAS EN DOBLE CHOCOLATE" },
-                    { id: "93957", name: "PALETA HELADA COOKIE CREAM" },
-                    { id: "93955", name: "PALETA HELADA DULCE DE LECHE" },
-                    { id: "93956", name: "PALETA HELADA FRUTILLA AL AGUA" }
-                  ]}
+                    {
+                        name: "Postres", items: [
+                            { id: "100549", name: "GIO BANANA CON CHOCOLATE" },
+                            { id: "100553", name: "GIO BANANA CON CHOCOLATE CON MANI" },
+                            { id: "100546", name: "GIO FRAMBUESAS BAÑADAS AMERICAN COOKIES" },
+                            { id: "100544", name: "GIO FRAMBUESAS BAÑADAS EN DOBLE CHOCOLATE" },
+                            { id: "100550", name: "GIO FRAMBUESAS BAÑADAS EN CHOCO BLANCO Y PISTACHO" },
+                            { id: "100548", name: "GIO FRAMBUESAS BAÑADAS EN CHOCOLATE SEMIAMARGO" },
+                            { id: "100552", name: "GIO FRUTILLA BAÑADAS AMERICAN COOKIES" },
+                            { id: "100554", name: "GIO FRUTILLAS BAÑADAS EN CHOCOLATE SEMIAMARGO" },
+                            { id: "100547", name: "GIO FRUTILLAS BAÑADAS EN DOBLE CHOCOLATE" },
+                            { id: "100545", name: "GIO MORAS BAÑADAS EN DOBLE CHOCOLATE" },
+                            { id: "93957", name: "PALETA HELADA COOKIE CREAM" },
+                            { id: "93955", name: "PALETA HELADA DULCE DE LECHE" },
+                            { id: "93956", name: "PALETA HELADA FRUTILLA AL AGUA" }
+                        ]
+                    }
                 ]
             },
             {
                 mainCat: "Papelera",
                 subCats: [
-                    { name: "Papelera", items: [
-                         { id: "45915", name: "Bobina papel" },
-        { id: "74927", name: "Bolsa Kraft N4 TOMASSO" },
-        { id: "74928", name: "Bolsa Kraft N5 TOMASSO" },
-        { id: "74929", name: "Bolsa Kraft N7 TOMASSO" },
-        { id: "45920", name: "Bolsas Kraft A4" },
-        { id: "45921", name: "Bolsas Kraft A5" },
-        { id: "45922", name: "Bolsas Kraft A7" },
-        { id: "60317", name: "CUCHARITA SUNDAY" },
-        { id: "50427", name: "BANDEJA CARTON N3" },
-        { id: "45923", name: "CAJA CITADELI 3 EMPANADAS" },
-        { id: "45924", name: "CAJA CITADELI 6 EMPANADAS" },
-        { id: "45925", name: "CAJA CITADELI XG - PIZZA" },
-        { id: "45926", name: "CAJA FLYMORFI CHICAS" },
-        { id: "45927", name: "CAJA FLYMORFI GRANDE" },
-        { id: "45928", name: "CAJA TOMASSO CHICA" },
-        { id: "45929", name: "CAJA TOMASSO EMPANADA" },
-        { id: "45930", name: "CAJA TOMASSO GRANDE" },
-        { id: "45931", name: "Cosito de la pizza" }
-                    ]}
+                    {
+                        name: "Papelera", items: [
+                            { id: "45915", name: "Bobina papel" },
+                            { id: "74927", name: "Bolsa Kraft N4 TOMASSO" },
+                            { id: "74928", name: "Bolsa Kraft N5 TOMASSO" },
+                            { id: "74929", name: "Bolsa Kraft N7 TOMASSO" },
+                            { id: "45920", name: "Bolsas Kraft A4" },
+                            { id: "45921", name: "Bolsas Kraft A5" },
+                            { id: "45922", name: "Bolsas Kraft A7" },
+                            { id: "60317", name: "CUCHARITA SUNDAY" },
+                            { id: "50427", name: "BANDEJA CARTON N3" },
+                            { id: "45923", name: "CAJA CITADELI 3 EMPANADAS" },
+                            { id: "45924", name: "CAJA CITADELI 6 EMPANADAS" },
+                            { id: "45925", name: "CAJA CITADELI XG - PIZZA" },
+                            { id: "45926", name: "CAJA FLYMORFI CHICAS" },
+                            { id: "45927", name: "CAJA FLYMORFI GRANDE" },
+                            { id: "45928", name: "CAJA TOMASSO CHICA" },
+                            { id: "45929", name: "CAJA TOMASSO EMPANADA" },
+                            { id: "45930", name: "CAJA TOMASSO GRANDE" },
+                            { id: "45931", name: "Cosito de la pizza" }
+                        ]
+                    }
                 ]
             },
             {
-    mainCat: "Panificados",
-    subCats: [
-      { name: "Panificados", items: [
-        { id: "60382", name: "MP - PAN CIABATTA" },
-        { id: "79053", name: "MP - MASA PIZZETA RECTANGULAR" },
-        { id: "45981", name: "MP - PIZZETA BLANCA" },
-        { id: "45991", name: "MP - XG MASA BLANCA" }
-      ]}
-    ]
-  },
+                mainCat: "Panificados",
+                subCats: [
+                    {
+                        name: "Panificados", items: [
+                            { id: "60382", name: "MP - PAN CIABATTA" }
+                        ]
+                    }
+                ]
+            },
+            {
+                mainCat: "PAV",
+                subCats: [
+                    {
+                        name: "PAV", items: [
+                            { id: "79053", name: "MP - MASA PIZZETA RECTANGULAR" },
+                            { id: "45981", name: "MP - PIZZETA BLANCA" },
+                            { id: "45991", name: "MP - XG MASA BLANCA" }
+                        ]
+                    }
+                ]
+            },
             {
                 mainCat: "Congelados",
                 subCats: [
-                    { name: "Empanadas Sin Tacc", items: [
-        { id: "45292", name: "EMP. SIN TACC JyQ x3u" },
-        { id: "45293", name: "EMP. SIN TACC CARNE x3u" }
-      ]},
-      { name: "Pizza Sin Tacc", items: [
-        { id: "45353", name: "MUZZA SIN TACC" }
-      ]},
-      { name: "Deleite", items: [
-        { id: "45354", name: "DELEITE FUGAZZETA" },
-        { id: "45355", name: "DELEITE JAMON" },
-        { id: "45356", name: "DELEITE MUZZARELLA" }
-      ]},
-      { name: "Chipas", items: [
-        { id: "45521", name: "CHIPA CONGELADO SIN TACC" }
-      ]}
+                    {
+                        name: "Empanadas Sin Tacc", items: [
+                            { id: "45292", name: "EMP. SIN TACC JyQ x3u" },
+                            { id: "45293", name: "EMP. SIN TACC CARNE x3u" }
+                        ]
+                    },
+                    {
+                        name: "Pizza Sin Tacc", items: [
+                            { id: "45353", name: "MUZZA SIN TACC" }
+                        ]
+                    },
+                    {
+                        name: "Deleite", items: [
+                            { id: "45354", name: "DELEITE FUGAZZETA" },
+                            { id: "45355", name: "DELEITE JAMON" },
+                            { id: "45356", name: "DELEITE MUZZARELLA" }
+                        ]
+                    },
+                    {
+                        name: "Chipas", items: [
+                            { id: "45521", name: "CHIPA CONGELADO SIN TACC" }
+                        ]
+                    }
                 ]
             }
         ];
@@ -255,7 +326,7 @@
             inventoryData.forEach((section, sIdx) => {
                 const sectionDiv = document.createElement('div');
                 sectionDiv.className = "category-block shadow-sm bg-white rounded-2xl border border-gray-100 overflow-hidden mb-3";
-                
+
                 const header = document.createElement('div');
                 header.className = "flex items-center justify-between p-5 cursor-pointer active:bg-gray-50";
                 header.onclick = () => sectionDiv.classList.toggle('category-active');
@@ -263,7 +334,7 @@
                     <span class="font-black text-gray-800 uppercase text-base">${section.mainCat}</span>
                     <svg class="chevron w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
                 `;
-                
+
                 const content = document.createElement('div');
                 content.className = "category-content bg-gray-50/50";
 
@@ -334,7 +405,7 @@
                 const match = i.innerText.toLowerCase().includes(q);
                 i.style.display = match ? 'flex' : 'none';
             });
-            if(q.length > 0) document.querySelectorAll('.category-block').forEach(b => b.classList.add('category-active'));
+            if (q.length > 0) document.querySelectorAll('.category-block').forEach(b => b.classList.add('category-active'));
         }
 
         function generateReport() {
@@ -359,4 +430,5 @@
         window.onload = init;
     </script>
 </body>
+
 </html>
