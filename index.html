@@ -4,93 +4,432 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tomasso Inventario</title>
-
+    <title>Tomasso Inventario Pro</title>
+    <link rel="apple-touch-icon" href="https://img.freepik.com/vector-premium/letra-t-logotipo-rojo-sobre-fondo-blanco-estilo-plano-ilustracion-vectorial_785634-193.jpg">
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- SheetJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .category-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-        .category-active .category-content { max-height: 5000px; }
+        .category-active .category-content { max-height: 5000px; transition: max-height 0.5s ease-in; }
+        .chevron { transition: transform 0.3s ease; }
+        .category-active .chevron { transform: rotate(180deg); }
     </style>
 </head>
 
 <body class="pb-32">
 
-<header class="bg-black text-white p-4 sticky top-0">
-    <h1 class="text-xl font-bold text-red-600">TOMASSO</h1>
-</header>
+    <header class="bg-black text-white p-4 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div onclick="resetApp()" class="cursor-pointer">
+                <h1 class="text-xl font-bold text-red-600 tracking-tighter">TOMASSO</h1>
+                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">Control de Stock</p>
+            </div>
+            <div id="header-right" class="flex items-center gap-2">
+                <div id="local-badge" class="hidden bg-red-600 text-[10px] px-3 py-1 rounded-full uppercase font-bold">Sin Local</div>
+                <button id="btn-back" onclick="resetApp()" class="hidden text-xs bg-gray-800 px-2 py-1 rounded text-gray-400 font-bold">CAMBIAR</button>
+            </div>
+        </div>
+    </header>
 
-<main class="max-w-md mx-auto p-4">
+    <main class="max-w-md mx-auto p-4 space-y-4">
+        <section id="setup-section" class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-100 mt-10">
+            <div class="text-center mb-6">
+                <span class="text-4xl">👋</span>
+                <h2 class="text-xl font-bold text-gray-800 mt-2">¡Hola!</h2>
+                <p class="text-sm text-gray-500">Seleccioná la sucursal de hoy:</p>
+            </div>
+            <div class="grid grid-cols-1 gap-4">
+                <button onclick="setLocal('España 501')" class="group text-left p-5 rounded-2xl border-2 border-gray-100 hover:border-red-500 active:bg-red-50 transition-all">
+                    <span class="block text-xs font-bold text-gray-400 uppercase">Local 1</span>
+                    <span class="text-lg font-bold text-gray-700">España 501</span>
+                </button>
+                <button onclick="setLocal('Mitre 338')" class="group text-left p-5 rounded-2xl border-2 border-gray-100 hover:border-red-500 active:bg-red-50 transition-all">
+                    <span class="block text-xs font-bold text-gray-400 uppercase">Local 2</span>
+                    <span class="text-lg font-bold text-gray-700">Mitre 338</span>
+                </button>
+                <button onclick="setLocal('Necochea 1295')" class="group text-left p-5 rounded-2xl border-2 border-gray-100 hover:border-red-500 active:bg-red-50 transition-all">
+                    <span class="block text-xs font-bold text-gray-400 uppercase">Local 3</span>
+                    <span class="text-lg font-bold text-gray-700">Necochea 1295</span>
+                </button>
+            </div>
+        </section>
 
-    <button onclick="generateReport()"
-        class="w-full bg-red-600 text-white font-bold py-4 rounded-xl">
-        GENERAR EXCEL
-    </button>
+        <div id="main-content" class="hidden space-y-4">
+            <div class="sticky top-20 z-40">
+                <input type="text" id="search" placeholder="🔍 Buscar producto..." class="w-full p-4 rounded-2xl shadow-xl border-none focus:ring-2 focus:ring-red-500 text-sm" onkeyup="filterProducts()">
+            </div>
+            <div id="inventory-container" class="space-y-3 pb-10"></div>
+        </div>
+    </main>
 
-</main>
+    <footer id="footer-actions" class="hidden fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-gray-100 z-50">
+        <div class="max-w-md mx-auto">
+            <button onclick="generateReport()" class="w-full bg-red-600 text-white font-bold py-5 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                <span>📊</span> GENERAR PLANILLA EXCEL
+            </button>
+        </div>
+    </footer>
 
-<script>
+    <div id="modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 z-[100]">
+        <div class="bg-white rounded-[2.5rem] p-10 max-w-sm w-full text-center space-y-6">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto">✓</div>
+            <h2 class="text-2xl font-bold text-gray-900">¡Descargado!</h2>
+            <button onclick="resetApp()" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold">LISTO</button>
+        </div>
+    </div>
 
-const inventoryData = [
-    {
-        mainCat: "Bebidas",
-        subCats: [
+    <script>
+        const inventoryData = [
             {
-                name: "Bebidas Chicas",
-                items: [
-                    { id: "61319", name: "AGUA BENEDICTINO CHICA" },
-                    { id: "61800", name: "AGUA CON GAS CHICA" }
+                mainCat: "Bebidas",
+                subCats: [
+                    {
+                        name: "Bebidas Chicas", items: [
+                            { id: "61319", name: "AGUA BENEDICTINO CHICA" },
+                            { id: "61800", name: "AGUA CON GAS CHICA" },
+                            { id: "60326", name: "AQUARIUS LIMONADA CHICA" },
+                            { id: "58673", name: "AQUARIUS MANZANA CHICA" },
+                            { id: "58674", name: "AQUARIUS NARANJA CHICA" },
+                            { id: "58676", name: "AQUARIUS POMELO CHICA" },
+                            { id: "60325", name: "AQUARIUS POMELO ROSADO CHICA" },
+                            { id: "73244", name: "FANTA SIN AZUCAR CHICA" },
+                            { id: "45241", name: "SMARTWATER CHICA" },
+                            { id: "61573", name: "SPRITE ZERO CHICA" },
+                            { id: "45265", name: "COCA COLA CHICA" },
+                            { id: "45269", name: "COCA COLA LIGHT CHICA" },
+                            { id: "45273", name: "COCA COLA ZERO CHICA" },
+                            { id: "45275", name: "FANTA NARANJA CHICA" },
+                            { id: "45279", name: "SPRITE CHICA" },
+                            { id: "61409", name: "AQUARIUS LIMONADA 237ml" },
+                            { id: "61410", name: "AQUARIUS MANZANA 237ml" },
+                            { id: "61411", name: "AQUARIUS NARANJA 237ml" },
+                            { id: "61412", name: "AQUARIUS PERA 237ml" },
+                            { id: "61413", name: "AQUARIUS POMELO 237ml" },
+                            { id: "61414", name: "AQUARIUS POMELO ROSADO 237ml" },
+                            { id: "45264", name: "COCA COLA 237ml" },
+                            { id: "45272", name: "COCA COLA ZERO 237ml" },
+                            { id: "45274", name: "FANTA NARANJA 237ml" },
+                            { id: "45278", name: "SPRITE 237ml" }
+                        ]
+                    },
+                    {
+                        name: "Bebidas Grandes", items: [
+                            { id: "61574", name: "SPRITE ZERO GRANDE" },
+                            { id: "45242", name: "AGUA 1.5l" },
+                            { id: "45243", name: "AGUA SABORIZADA 1.5l" },
+                            { id: "45283", name: "COCA COLA GRANDE" },
+                            { id: "45284", name: "COCA COLA LIGHT GRANDE" },
+                            { id: "45286", name: "COCA COLA ZERO GRANDE" },
+                            { id: "45288", name: "FANTA NARANJA GRANDE" },
+                            { id: "45291", name: "SPRITE GRANDE" }
+                        ]
+                    },
+                    {
+                        name: "Cervezas", items: [
+                            { id: "45248", name: "ANDES IPA" },
+                            { id: "45249", name: "ANDES NEGRA" },
+                            { id: "45250", name: "ANDES ROJA" },
+                            { id: "45251", name: "ANDES RUBIA" },
+                            { id: "45252", name: "BRAHMA" },
+                            { id: "45253", name: "BUDWEISER" },
+                            { id: "45255", name: "CORONA 410ml" },
+                            { id: "45257", name: "PATAGONIA 24.7" },
+                            { id: "45258", name: "PATAGONIA AMBER" },
+                            { id: "45259", name: "PATAGONIA OSO" },
+                            { id: "45260", name: "PATAGONIA WEISSE" },
+                            { id: "45261", name: "QUILMES" },
+                            { id: "45263", name: "STELLA ARTOIS" }
+                        ]
+                    }
+                ]
+            },
+            {
+                mainCat: "Empanadas",
+                subCats: [
+                    {
+                        name: "Empanadas Clasicas", items: [
+                            { id: "45318", name: "EMPANADA CARNE" },
+                            { id: "45319", name: "EMPANADA CARNE PICANTE" },
+                            { id: "45320", name: "EMPANADA CEBOLLA Y QUESO" },
+                            { id: "45321", name: "EMPANADA HUMITA" },
+                            { id: "45322", name: "EMPANADA JAMON Y QUESO" },
+                            { id: "45323", name: "EMPANADA POLLO" },
+                            { id: "45324", name: "EMPANADA VERDURA" }
+                        ]
+                    },
+                    {
+                        name: "Empanadas Tentacion", items: [
+                            { id: "45308", name: "EMPANADA VEGGIE INTEGRAL" },
+                            { id: "45310", name: "EMPANADA BONDIOLA BBQ TENTACION" },
+                            { id: "45311", name: "EMPANADA CARNE CORTADA A CUCHILLO" },
+                            { id: "45312", name: "EMPANADA CHEESE BURGER" },
+                            { id: "45313", name: "EMPANADA CAPRESE" },
+                            { id: "45315", name: "EMPANADA ROQUEFORT JAMON" },
+                            { id: "45316", name: "CAMBIO A ESPECIALES" }
+                        ]
+                    }
+                ]
+            },
+            {
+                mainCat: "Postres",
+                subCats: [
+                    {
+                        name: "Postres", items: [
+                            { id: "100549", name: "GIO BANANA CON CHOCOLATE" },
+                            { id: "100553", name: "GIO BANANA CON CHOCOLATE CON MANI" },
+                            { id: "100546", name: "GIO FRAMBUESAS BAÑADAS AMERICAN COOKIES" },
+                            { id: "100544", name: "GIO FRAMBUESAS BAÑADAS EN DOBLE CHOCOLATE" },
+                            { id: "100550", name: "GIO FRAMBUESAS BAÑADAS EN CHOCO BLANCO Y PISTACHO" },
+                            { id: "100548", name: "GIO FRAMBUESAS BAÑADAS EN CHOCOLATE SEMIAMARGO" },
+                            { id: "100552", name: "GIO FRUTILLA BAÑADAS AMERICAN COOKIES" },
+                            { id: "100554", name: "GIO FRUTILLAS BAÑADAS EN CHOCOLATE SEMIAMARGO" },
+                            { id: "100547", name: "GIO FRUTILLAS BAÑADAS EN DOBLE CHOCOLATE" },
+                            { id: "100545", name: "GIO MORAS BAÑADAS EN DOBLE CHOCOLATE" },
+                            { id: "93957", name: "PALETA HELADA COOKIE CREAM" },
+                            { id: "93955", name: "PALETA HELADA DULCE DE LECHE" },
+                            { id: "93956", name: "PALETA HELADA FRUTILLA AL AGUA" }
+                        ]
+                    }
+                ]
+            },
+            {
+                mainCat: "Papelera",
+                subCats: [
+                    {
+                        name: "Papelera", items: [
+                            { id: "45915", name: "Bobina papel" },
+                            { id: "74927", name: "Bolsa Kraft N4 TOMASSO" },
+                            { id: "74928", name: "Bolsa Kraft N5 TOMASSO" },
+                            { id: "74929", name: "Bolsa Kraft N7 TOMASSO" },
+                            { id: "45920", name: "Bolsas Kraft A4" },
+                            { id: "45921", name: "Bolsas Kraft A5" },
+                            { id: "45922", name: "Bolsas Kraft A7" },
+                            { id: "60317", name: "CUCHARITA SUNDAY" },
+                            { id: "50427", name: "BANDEJA CARTON N3" },
+                            { id: "45923", name: "CAJA CITADELI 3 EMPANADAS" },
+                            { id: "45924", name: "CAJA CITADELI 6 EMPANADAS" },
+                            { id: "45925", name: "CAJA CITADELI XG - PIZZA" },
+                            { id: "45926", name: "CAJA FLYMORFI CHICAS" },
+                            { id: "45927", name: "CAJA FLYMORFI GRANDE" },
+                            { id: "45928", name: "CAJA TOMASSO CHICA" },
+                            { id: "45929", name: "CAJA TOMASSO EMPANADA" },
+                            { id: "45930", name: "CAJA TOMASSO GRANDE" },
+                            { id: "45931", name: "Cosito de la pizza" }
+                        ]
+                    }
+                ]
+            },
+            {
+                mainCat: "Panificados",
+                subCats: [
+                    {
+                        name: "Panificados", items: [
+                            { id: "60382", name: "MP - PAN CIABATTA" }
+                        ]
+                    }
+                ]
+            },
+            {
+                mainCat: "PAV",
+                subCats: [
+                    {
+                        name: "PAV", items: [
+                            { id: "79053", name: "MP - MASA PIZZETA RECTANGULAR" },
+                            { id: "45981", name: "MP - PIZZETA BLANCA" },
+                            { id: "45991", name: "MP - XG MASA BLANCA" }
+                        ]
+                    }
+                ]
+            },
+            {
+                mainCat: "Congelados",
+                subCats: [
+                    {
+                        name: "Empanadas Sin Tacc", items: [
+                            { id: "45292", name: "EMP. SIN TACC JyQ x3u" },
+                            { id: "45293", name: "EMP. SIN TACC CARNE x3u" }
+                        ]
+                    },
+                    {
+                        name: "Pizza Sin Tacc", items: [
+                            { id: "45353", name: "MUZZA SIN TACC" }
+                        ]
+                    },
+                    {
+                        name: "Deleite", items: [
+                            { id: "45354", name: "DELEITE FUGAZZETA" },
+                            { id: "45355", name: "DELEITE JAMON" },
+                            { id: "45356", name: "DELEITE MUZZARELLA" }
+                        ]
+                    },
+                    {
+                        name: "Chipas", items: [
+                            { id: "45521", name: "CHIPA CONGELADO SIN TACC" }
+                        ]
+                    }
                 ]
             }
-        ]
-    }
-];
+        ];
 
-let selectedLocal = "España 501";
-let counts = {};
+        let selectedLocal = "";
+        let counts = {};
 
-async function generateReport() {
-    try {
-        const response = await fetch("Inventario.xlsx");
-        const buffer = await response.arrayBuffer();
+        function init() {
+            const container = document.getElementById('inventory-container');
+            container.innerHTML = "";
+            inventoryData.forEach(section => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = "category-block shadow-sm bg-white rounded-2xl border border-gray-100 overflow-hidden mb-3";
+                sectionDiv.innerHTML = `
+                    <div class="flex items-center justify-between p-5 cursor-pointer active:bg-gray-50" onclick="this.parentElement.classList.toggle('category-active')">
+                        <span class="font-black text-gray-800 uppercase text-base">${section.mainCat}</span>
+                        <svg class="chevron w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="category-content bg-gray-50/50"></div>
+                `;
+                const content = sectionDiv.querySelector('.category-content');
+                section.subCats.forEach(sub => {
+                    const subH = document.createElement('div');
+                    subH.className = "text-[10px] font-bold text-red-400 px-5 pt-4 pb-1 uppercase tracking-widest";
+                    subH.innerText = sub.name;
+                    content.appendChild(subH);
+                    sub.items.forEach(item => {
+                        const row = document.createElement('div');
+                        row.className = "product-item p-4 flex items-center justify-between border-b border-gray-100 last:border-none mx-2";
+                        row.innerHTML = `
+                            <div class="flex-1 pr-2">
+                                <div class="text-[8px] text-gray-300">#${item.id}</div>
+                                <div class="text-[13px] font-semibold text-gray-700">${item.name}</div>
+                            </div>
+                            <div class="flex items-center gap-2 bg-white p-1 rounded-xl border border-gray-100">
+                                <button onclick="updateCount('${item.id}', -1, event)" class="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 font-bold">-</button>
+                                <input type="number" id="input-${item.id}" value="" onchange="setManual('${item.id}', this.value)" onclick="event.stopPropagation()" class="w-10 text-center font-black text-sm border-none focus:ring-0 text-red-600">
+                                <button onclick="updateCount('${item.id}', 1, event)" class="w-8 h-8 rounded-lg bg-red-600 text-white font-bold">+</button>
+                            </div>
+                        `;
+                        content.appendChild(row);
+                    });
+                });
+                container.appendChild(sectionDiv);
+            });
+        }
 
-        const wb = XLSX.read(buffer, { type: "array" });
-        const ws = wb.Sheets[wb.SheetNames[0]];
+        function setLocal(n) {
+            selectedLocal = n;
+            document.getElementById('local-badge').innerText = n;
+            document.getElementById('local-badge').classList.remove('hidden');
+            document.getElementById('btn-back').classList.remove('hidden');
+            document.getElementById('setup-section').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('hidden');
+            document.getElementById('footer-actions').classList.remove('hidden');
+        }
 
-        let row = 4; // ajustá según tu plantilla
+        function resetApp() {
+            selectedLocal = ""; counts = {};
+            document.getElementById('setup-section').classList.remove('hidden');
+            document.getElementById('main-content').classList.add('hidden');
+            document.getElementById('footer-actions').classList.add('hidden');
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('local-badge').classList.add('hidden');
+            document.getElementById('btn-back').classList.add('hidden');
+            init();
+        }
 
-        inventoryData.forEach(sec => {
-            XLSX.utils.sheet_add_aoa(ws, [[sec.mainCat]], { origin: `B${row}` });
-            row++;
+        function updateCount(id, d, e) {
+            e.stopPropagation();
+            const i = document.getElementById(`input-${id}`);
+            let v = Math.max(0, (parseInt(i.value) || 0) + d);
+            i.value = v; counts[id] = v;
+        }
 
-            sec.subCats.forEach(sub => {
-                XLSX.utils.sheet_add_aoa(ws, [[sub.name]], { origin: `A${row}` });
-                row++;
+        function setManual(id, v) { counts[id] = Math.max(0, parseInt(v) || 0); }
 
-                sub.items.forEach(it => {
-                    XLSX.utils.sheet_add_aoa(ws, [[
-                        it.id,
-                        it.name,
-                        counts[it.id] || 0
-                    ]], { origin: `A${row}` });
-                    row++;
+        function filterProducts() {
+            const q = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('.product-item').forEach(i => {
+                i.style.display = i.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
+            });
+            if (q.length > 0) document.querySelectorAll('.category-block').forEach(b => b.classList.add('category-active'));
+        }
+
+        async function generateReport() {
+            if (!selectedLocal) return;
+
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Inventario');
+
+            // Configuración de Columnas (Anchos exactos)
+            worksheet.columns = [
+                { header: 'Cód. sistema', key: 'id', width: 14 },
+                { header: 'Producto', key: 'name', width: 45 },
+                { header: 'Stock', key: 'stock', width: 10 }
+            ];
+
+            const borderStyle = {
+                top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'}
+            };
+
+            // Fila de Encabezados (Negro con blanco)
+            const headerRow = worksheet.getRow(1);
+            headerRow.values = ['Cód. sistema', 'Producto', 'Stock'];
+            headerRow.eachCell((cell) => {
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF000000' } };
+                cell.font = { name: 'Calibri', size: 11, color: { argb: 'FFFFFFFF' }, bold: true };
+                cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                cell.border = borderStyle;
+            });
+
+            inventoryData.forEach(sec => {
+                // Fila Categoría Principal (#607D8B)
+                const mainRow = worksheet.addRow(['', sec.mainCat, '']);
+                mainRow.eachCell((cell, colNumber) => {
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF607D8B' } };
+                    cell.font = { name: 'Calibri', size: 11, color: { argb: 'FFFFFFFF' }, bold: true };
+                    cell.border = borderStyle;
+                    if(colNumber === 2) cell.alignment = { horizontal: 'left' };
+                });
+
+                sec.subCats.forEach(sub => {
+                    // Fila Subcategoría (#DFF0D8)
+                    const subRow = worksheet.addRow(['', sub.name, '']);
+                    subRow.eachCell((cell, colNumber) => {
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDFF0D8' } };
+                        cell.font = { name: 'Calibri', size: 11, color: { argb: 'FF000000' }, bold: true };
+                        cell.border = borderStyle;
+                        if(colNumber === 2) cell.alignment = { horizontal: 'left' };
+                    });
+
+                    sub.items.forEach(it => {
+                        const row = worksheet.addRow([it.id, it.name, counts[it.id] || 0]);
+                        row.eachCell((cell, colNumber) => {
+                            cell.font = { name: 'Calibri', size: 11 };
+                            cell.border = borderStyle;
+                            // Alineación según columna (como en tu foto)
+                            if (colNumber === 1 || colNumber === 3) {
+                                cell.alignment = { horizontal: 'center' };
+                            } else {
+                                cell.alignment = { horizontal: 'left' };
+                            }
+                        });
+                    });
                 });
             });
-        });
 
-        XLSX.writeFile(wb, `Stock_${selectedLocal}.xlsx`);
+            // Generar y descargar
+            const buffer = await workbook.xlsx.writeBuffer();
+            const fileName = `Stock_${selectedLocal}_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`;
+            saveAs(new Blob([buffer]), fileName);
 
-    } catch (err) {
-        console.error("Error generando Excel:", err);
-        alert("No se pudo cargar Inventario.xlsx");
-    }
-}
+            document.getElementById('modal').classList.remove('hidden');
+        }
 
-</script>
-
+        window.onload = init;
+    </script>
 </body>
 </html>
